@@ -1,12 +1,12 @@
 <template>
   <div class="grid">
-    <div v-for="columnName in columnLegend">
+    <div v-for="columnName in columnLegend" :key="`top-${columnName}`">
       <ChessSquare :value="columnName" :hasBorder="false"></ChessSquare>
     </div>
-    <div v-for="n in 80">
+    <div v-for="n in 80" :key="n">
       <ChessSquare :value="n.toString()"></ChessSquare>
     </div>
-    <div v-for="columnName in columnLegend">
+    <div v-for="columnName in columnLegend" :key="`bottom-${columnName}`">
       <ChessSquare :value="columnName" :hasBorder="false"></ChessSquare>
     </div>
   </div>
