@@ -59,8 +59,12 @@ export default {
       return (cellNumber % 10) -2;
     },
     test() {
-      
-      this.$store.dispatch('test');
+      let whiteKing = { row: 0, column: 1 };
+      let whiteAmazon = { row: 3, column: 0 };
+      this.$store.dispatch('updateBoard', {
+        whiteKing: whiteKing,
+        whiteAmazon: whiteAmazon
+      });
     }
   },
 }

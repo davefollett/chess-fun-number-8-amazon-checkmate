@@ -1,6 +1,10 @@
 const DEFAULT_SQUARE = "O";
 const INIT_SQUARE = "-"
 
+const WHITEKING = "K";
+const WHITEAMAZON = "A";
+
+
 function initializeBoard(initialState) {
   let board = new Array(8);
   for(let i = 0; i < board.length; i++) {
@@ -29,21 +33,19 @@ const state = {
   
   
   const actions = {
-    test({ commit }) {
-      
-      commit('CHANGE_SQUARE');
-  },
+    updateBoard({ commit }, payload) {
+      commit('UPDATE_BOARD', payload);
+    },
   }
   
   
   const mutations = {
-    CHANGE_SQUARE: (state) => {
+    UPDATE_BOARD: (state, payload) => {
       let newBoard = initializeBoard(DEFAULT_SQUARE);
-      newBoard[0][0] = "X";
 
+      newBoard[payload.whiteKing.row][payload.whiteKing.column] = WHITEKING;
+      newBoard[payload.whiteAmazon.row][payload.whiteAmazon.column] = WHITEAMAZON;
 
-
-      
       state.chessboard = newBoard;
     }
   }
