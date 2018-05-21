@@ -1,20 +1,26 @@
 <template>
+  <div>
   <div class="grid">
     <div v-for="(columnName,index) in columnLegend" :key="`top-${index}`">
       <ChessSquare :value="columnName" :hasBorder="false"></ChessSquare>
     </div>
     <div v-for="n in 80" :key="n">
-      <ChessSquare v-if="n % 10 === 1 || n % 10 === 0" :value="rowLegend[n]" :hasBorder="false" ></ChessSquare>
-      <ChessSquare v-else :value="`${getRow(n)},${getColumn(n)}`"></ChessSquare>
+      <ChessSquare v-if="n % 10 === 1 || n % 10 === 0" :hasBorder="false" ></ChessSquare>
+      <ChessSquare v-else :row="getRow(n)" :column="getColumn(n)"></ChessSquare>
     </div>
     <div v-for="(columnName,index) in columnLegend" :key="`bottom-${index}`">
       <ChessSquare :value="columnName" :hasBorder="false"></ChessSquare>
     </div>
   </div>
+  <button @click="test">TEST</button>
+  </div>
 </template>
 
 
 <script>
+//<ChessSquare v-if="n % 10 === 1 || n % 10 === 0" :value="rowLegend[n]" :hasBorder="false" ></ChessSquare>
+//<ChessSquare v-else :value="`${getRow(n)},${getColumn(n)}`"></ChessSquare>
+//<ChessSquare v-else :value="getSquareValue(getRow(n), getColumn(n))"></ChessSquare>
 import ChessSquare from '@/components/ChessSquare.vue'
 
 export default {
@@ -51,8 +57,26 @@ export default {
     },
     getColumn(cellNumber) {
       return (cellNumber % 10) -2;
+    },
+    getSquareValue: function(row, column) {
+      //console.log({row,column});
+      //console.log(this.$store);
+      return this.$store.getters.getSquareValue(row, column);
+    },
+    test() {
+      
+      this.$store.dispatch('test');
     }
+  },
+  /*
+  computed: {
+    getSquareValue: function(row, column) {
+      console.log({row,column});
+      //console.log(this.$store);
+      return "W";//this.$store.chessboard.getters.getSquareValue(row, column);
+    },
   }
+  */
 }
 </script>
 

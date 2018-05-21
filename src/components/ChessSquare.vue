@@ -8,18 +8,20 @@
 export default {
   name: 'ChessSquare',
   props: {
-    value: String,
+    //value: String,
+    row: Number,
+    column: Number,
     hasBorder: {
       default: true,
       type: Boolean
     }
   },
-  /*
   computed: {
-      hasBorder() {
-        return this.$store.getters.isLeaderboardLoading;
-      },
-      */
+    value() {
+      if(!this.hasBorder) return "x";
+      return this.$store.getters.getSquareValue(this.row, this.column);
+    },
+  }
 }
 </script>
 
