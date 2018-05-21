@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ border: hasBorder }">
+  <div class="border">
     {{ value }}
   </div>
 </template>
@@ -8,17 +8,11 @@
 export default {
   name: 'ChessSquare',
   props: {
-    //value: String,
     row: Number,
     column: Number,
-    hasBorder: {
-      default: true,
-      type: Boolean
-    }
   },
   computed: {
     value() {
-      if(!this.hasBorder) return "x";
       return this.$store.getters.getSquareValue(this.row, this.column);
     },
   }
@@ -26,6 +20,7 @@ export default {
 </script>
 
 <style scoped>
+
 .border {
   border-style: solid;
   border-width: 5px;

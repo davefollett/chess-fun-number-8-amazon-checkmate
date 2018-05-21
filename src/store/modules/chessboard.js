@@ -1,31 +1,28 @@
 const DEFAULT_SQUARE = "O";
+const INIT_SQUARE = "-"
 
-
-function initializeBoard() {
+function initializeBoard(initialState) {
   let board = new Array(8);
   for(let i = 0; i < board.length; i++) {
-    board[i] = new Array(DEFAULT_SQUARE,
-                         DEFAULT_SQUARE,
-                         DEFAULT_SQUARE,
-                         DEFAULT_SQUARE,
-                         DEFAULT_SQUARE,
-                         DEFAULT_SQUARE,
-                         DEFAULT_SQUARE,
-                         DEFAULT_SQUARE);
+    board[i] = new Array(initialState,
+                         initialState,
+                         initialState,
+                         initialState,
+                         initialState,
+                         initialState,
+                         initialState,
+                         initialState);
   }
   return board;
 }
 
-
-
 const state = {
-    chessboard: initializeBoard()
+    chessboard: initializeBoard(INIT_SQUARE)
   }
   
   
   const getters = {
     getSquareValue: (state) => (row, column) => {
-      console.log(state.chessboard);
       return state.chessboard[row][column];
     }
   }
@@ -41,11 +38,13 @@ const state = {
   
   const mutations = {
     CHANGE_SQUARE: (state) => {
-      let newArray = state.chessboard.map(function(arr) {
-        return arr.slice();
-      });
-      newArray[0][0] = "X";
-      state.chessboard = newArray;//[0][0] = "X";
+      let newBoard = initializeBoard(DEFAULT_SQUARE);
+      newBoard[0][0] = "X";
+
+
+
+      
+      state.chessboard = newBoard;
     }
   }
   

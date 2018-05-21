@@ -2,14 +2,14 @@
   <div>
   <div class="grid">
     <div v-for="(columnName,index) in columnLegend" :key="`top-${index}`">
-      <ChessSquare :value="columnName" :hasBorder="false"></ChessSquare>
+      <chess-square-legend :value="columnName"></chess-square-legend>
     </div>
     <div v-for="n in 80" :key="n">
-      <ChessSquare v-if="n % 10 === 1 || n % 10 === 0" :hasBorder="false" ></ChessSquare>
-      <ChessSquare v-else :row="getRow(n)" :column="getColumn(n)"></ChessSquare>
+      <chess-square-legend v-if="n % 10 === 1 || n % 10 === 0" :value="rowLegend[n]"></chess-square-legend>
+      <chess-square v-else :row="getRow(n)" :column="getColumn(n)"></chess-square>
     </div>
     <div v-for="(columnName,index) in columnLegend" :key="`bottom-${index}`">
-      <ChessSquare :value="columnName" :hasBorder="false"></ChessSquare>
+      <chess-square-legend :value="columnName"></chess-square-legend>
     </div>
   </div>
   <button @click="test">TEST</button>
@@ -18,15 +18,15 @@
 
 
 <script>
-//<ChessSquare v-if="n % 10 === 1 || n % 10 === 0" :value="rowLegend[n]" :hasBorder="false" ></ChessSquare>
-//<ChessSquare v-else :value="`${getRow(n)},${getColumn(n)}`"></ChessSquare>
-//<ChessSquare v-else :value="getSquareValue(getRow(n), getColumn(n))"></ChessSquare>
+
 import ChessSquare from '@/components/ChessSquare.vue'
+import ChessSquareLegend from '@/components/ChessSquareLegend.vue'
 
 export default {
   name: 'ChessBoard',
   components: {
-    ChessSquare
+    ChessSquare,
+    ChessSquareLegend
   },
   data () {
     return {
@@ -58,29 +58,16 @@ export default {
     getColumn(cellNumber) {
       return (cellNumber % 10) -2;
     },
-    getSquareValue: function(row, column) {
-      //console.log({row,column});
-      //console.log(this.$store);
-      return this.$store.getters.getSquareValue(row, column);
-    },
     test() {
       
       this.$store.dispatch('test');
     }
   },
-  /*
-  computed: {
-    getSquareValue: function(row, column) {
-      console.log({row,column});
-      //console.log(this.$store);
-      return "W";//this.$store.chessboard.getters.getSquareValue(row, column);
-    },
-  }
-  */
 }
 </script>
 
 <style scoped>
+
 .grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
