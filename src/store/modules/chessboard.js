@@ -24,7 +24,7 @@ function initializeBoard(initialState) {
   return board;
 }
 
-const state = {
+  const state = {
     chessboard: initializeBoard(INIT_SQUARE),
     whiteKing: {},
     whiteAmazon: {},
@@ -33,7 +33,6 @@ const state = {
     numberStalemate: 0,
     numberSafe: 0
   }
-  
   
   const getters = {
     getSquareValue: (state) => (row, column) => {
@@ -53,13 +52,11 @@ const state = {
     }
   }
   
-  
   const actions = {
     updateBoard({ commit }, payload) {
       commit('UPDATE_BOARD', payload);
     },
   }
-  
   
   const mutations = {
     UPDATE_BOARD: (state, payload) => {
@@ -86,27 +83,30 @@ const state = {
   
   function canMoveSafely(board, king, amazon) {
 
-    /*
     for(let row = 0; row < board.length; row++) {
       for(let column = 0; column < board[row].length; column++) {
-        //can this position make a safe move
-        //console.log({row,column});
-        if(board[row][column] === SAFE || board[row][column] === CHECK) {
+
+        if(board[row][column] === SAFE) {
           
-          if(!isAdjacent(board, row, column, SAFE) {
-            
+          if(!isAdjacent(board, row, column, SAFE)) {
+            board[row][column] = STALEMATE;
           }
+        } else if(board[row][column] === CHECK) {
+
+          if(!isAdjacent(board, row, column, SAFE) && !isAdjacent(board, row, column, STALEMATE)) {
+
+            if(isAdjacent(board, row, column, WHITEAMAZON) && !isAdjacent(board, amazon.row, amazon.column, WHITEKING)) {
+              board[row][column] = CHECK;
+            } else {
+              board[row][column] = CHECKMATE;
+            }
+          }
+        }
       }
     }
-*/
+
     return board;
   }
-
-  /*
-  function isAdjacentAmazonWithAdjacentKing(board, king, amazon) {
-
-  }
-*/
 
   function computeTotal(newBoard, value) {
     return newBoard.reduce(function(accumulator, current) {
@@ -238,3 +238,34 @@ const state = {
     actions,
     mutations
   }
+
+/*
+  class CodewarsTests(unittest.TestCase):
+
+    def test_problem_description_example(self):
+        self.assertEqual(apb.amazon_check_mate("d3", "e4"), [5, 21, 0, 29])
+
+    def test_case_1(self):
+        self.assertEqual(apb.amazon_check_mate("a1", "g5"), [0, 29, 1, 29])
+
+    def test_case_2(self):
+        self.assertEqual(apb.amazon_check_mate("a3", "e4"), [1, 32, 1, 23])
+
+    def test_case_3(self):
+        self.assertEqual(apb.amazon_check_mate("f3", "f2"), [6, 11, 0, 38])
+
+    def test_case_4(self):
+        self.assertEqual(apb.amazon_check_mate("b7", "a8"), [0, 10, 0, 45])
+
+    def test_case_5(self):
+        self.assertEqual(apb.amazon_check_mate("f7", "d3"), [4, 28, 1, 21])
+
+    def test_case_6(self):
+        self.assertEqual(apb.amazon_check_mate("g2", "c3"), [9, 21, 0, 24])
+
+    def test_case_7(self):
+        self.assertEqual(apb.amazon_check_mate("f3", "c1"), [4, 18, 0, 32])
+
+    def test_case_8(self):
+        self.assertEqual(apb.amazon_check_mate("d4", "h8"), [0, 18, 0, 36])
+        */
