@@ -166,9 +166,9 @@ const state = {
     return result;
   }
 
-  function markCheckUpLeft(board, amazon) {
-    let row = amazon.row-1;
-    let column = amazon.column-1;
+  function markCheckTillOccupied(board, amazon, row_inc, column_inc ) {
+    let row = amazon.row + row_inc;
+    let column = amazon.column + column_inc;
     let foundKing = false;
     while(onTheBoard(row, column) && !foundKing) {
       
@@ -177,129 +177,29 @@ const state = {
       } else if(board[row][column] === WHITEKING) {
         foundKing = true;
       }
-      row--;
-      column--;
+      row += row_inc;
+      column += column_inc;
     }
     return board;
   }
 
-  function markCheckUpRight(board, amazon) {
-    let row = amazon.row-1;
-    let column = amazon.column+1;
-    let foundKing = false;
-    while(onTheBoard(row, column) && !foundKing) {
-      
-      if(board[row][column] === SAFE) {
-        board[row][column] = CHECK;
-      } else if(board[row][column] === WHITEKING) {
-        foundKing = true;
-      }
-      row--;
-      column++;
-    }
+  function markCheckAsRook(board, amazon) {
+    board = markCheckTillOccupied(board, amazon, -1, 0);
+    board = markCheckTillOccupied(board, amazon, 1, 0);
+    board = markCheckTillOccupied(board, amazon, 0, -1);
+    board = markCheckTillOccupied(board, amazon, 0, 1);
     return board;
   }
 
-  function markCheckDownLeft(board, amazon) {
-    let row = amazon.row+1;
-    let column = amazon.column-1;
-    let foundKing = false;
-    while(onTheBoard(row, column) && !foundKing) {
-      
-      if(board[row][column] === SAFE) {
-        board[row][column] = CHECK;
-      } else if(board[row][column] === WHITEKING) {
-        foundKing = true;
-      }
-      row++;
-      column--;
-    }
+  function markCheckAsBishop(board, amazon) {
+    board = markCheckTillOccupied(board, amazon, -1, -1);
+    board = markCheckTillOccupied(board, amazon, 1, 1);
+    board = markCheckTillOccupied(board, amazon, -1, 1);
+    board = markCheckTillOccupied(board, amazon, 1, -1);
     return board;
   }
 
-  function markCheckDownRight(board, amazon) {
-    let row = amazon.row+1;
-    let column = amazon.column+1;
-    let foundKing = false;
-    while(onTheBoard(row, column) && !foundKing) {
-      
-      if(board[row][column] === SAFE) {
-        board[row][column] = CHECK;
-      } else if(board[row][column] === WHITEKING) {
-        foundKing = true;
-      }
-      row++;
-      column++;
-    }
-    return board;
-  }
-
-  function markCheckUp(board, amazon) {
-    let row = amazon.row-1;
-    let column = amazon.column;
-    let foundKing = false;
-    while(onTheBoard(row, column) && !foundKing) {
-      
-      if(board[row][column] === SAFE) {
-        board[row][column] = CHECK;
-      } else if(board[row][column] === WHITEKING) {
-        foundKing = true;
-      }
-      row--;
-    }
-    return board;
-  }
-
-  function markCheckDown(board, amazon) {
-    let row = amazon.row+1;
-    let column = amazon.column;
-    let foundKing = false;
-    while(onTheBoard(row, column) && !foundKing) {
-      
-      if(board[row][column] === SAFE) {
-        board[row][column] = CHECK;
-      } else if(board[row][column] === WHITEKING) {
-        foundKing = true;
-      }
-      row++;
-    }
-    return board;
-  }
-
-  function markCheckLeft(board, amazon) {
-    let row = amazon.row;
-    let column = amazon.column-1;
-    let foundKing = false;
-    while(onTheBoard(row, column) && !foundKing) {
-      
-      if(board[row][column] === SAFE) {
-        board[row][column] = CHECK;
-      } else if(board[row][column] === WHITEKING) {
-        foundKing = true;
-      }
-      column--;
-    }
-    return board;
-  }
-
-  function markCheckRight(board, amazon) {
-    let row = amazon.row;
-    let column = amazon.column+1;
-    let foundKing = false;
-    while(onTheBoard(row, column) && !foundKing) {
-      
-      if(board[row][column] === SAFE) {
-        board[row][column] = CHECK;
-      } else if(board[row][column] === WHITEKING) {
-        foundKing = true;
-      }
-      column++;
-    }
-    return board;
-  }
-
-
-  function markCheckAsKnight(board, row, column) {
+  function markSquareInCheck(board, row, column) {
   
     if(onTheBoard(row, column) && board[row][column] === SAFE) {
       board[row][column] = CHECK;
@@ -308,33 +208,29 @@ const state = {
     return board;
   }
 
-  function markCheckLocations(board, amazon) {
-    // Mark the column and row of the amazon as CHECK
-    board = markCheckUp(board, amazon);
-    board = markCheckDown(board, amazon);
-    board = markCheckLeft(board, amazon);
-    board = markCheckRight(board, amazon);
-    
-    // Mark the diag of the amazon as CHECK
-    board = markCheckUpLeft(board, amazon);
-    board = markCheckUpRight(board, amazon);
-    board = markCheckDownLeft(board, amazon);
-    board = markCheckDownRight(board, amazon);
-    
-    board = markCheckAsKnight(board, amazon.row-1, amazon.column-2);
-    board = markCheckAsKnight(board, amazon.row-2, amazon.column-1);
-    board = markCheckAsKnight(board, amazon.row-2, amazon.column+1);
-    board = markCheckAsKnight(board, amazon.row-1, amazon.column+2);
+  function markCheckAsKnight(board, amazon) {
+  
+    board = markSquareInCheck(board, amazon.row-1, amazon.column-2);
+    board = markSquareInCheck(board, amazon.row-2, amazon.column-1);
+    board = markSquareInCheck(board, amazon.row-2, amazon.column+1);
+    board = markSquareInCheck(board, amazon.row-1, amazon.column+2);
 
-    board = markCheckAsKnight(board, amazon.row+1, amazon.column+2);
-    board = markCheckAsKnight(board, amazon.row+2, amazon.column+1);
-    board = markCheckAsKnight(board, amazon.row+2, amazon.column-1);
-    board = markCheckAsKnight(board, amazon.row+1, amazon.column-2);
-
+    board = markSquareInCheck(board, amazon.row+1, amazon.column+2);
+    board = markSquareInCheck(board, amazon.row+2, amazon.column+1);
+    board = markSquareInCheck(board, amazon.row+2, amazon.column-1);
+    board = markSquareInCheck(board, amazon.row+1, amazon.column-2);
+    
     return board;
   }
 
+  function markCheckLocations(board, amazon) {
 
+    board = markCheckAsRook(board, amazon);
+    board = markCheckAsBishop(board, amazon);
+    board = markCheckAsKnight(board, amazon);
+    
+    return board;
+  }
 
   export default {
     state,
