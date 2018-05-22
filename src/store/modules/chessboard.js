@@ -93,7 +93,7 @@ const state = {
         //console.log({row,column});
         if(board[row][column] === SAFE || board[row][column] === CHECK) {
           
-          if(!isAdjacent(row, column, SAFE) {
+          if(!isAdjacent(board, row, column, SAFE) {
             
           }
       }
@@ -102,9 +102,11 @@ const state = {
     return board;
   }
 
+  /*
   function isAdjacentAmazonWithAdjacentKing(board, king, amazon) {
 
   }
+*/
 
   function computeTotal(newBoard, value) {
     return newBoard.reduce(function(accumulator, current) {
@@ -127,7 +129,7 @@ const state = {
     ];
   }
 
-  function isAdjacent(row, column, type) {
+  function isAdjacent(board, row, column, type) {
     let result = false;
     let adjacent = getAdjacentLocations(row, column);
 
