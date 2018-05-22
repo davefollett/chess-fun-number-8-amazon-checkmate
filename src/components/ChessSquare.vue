@@ -24,5 +24,6 @@ export default {
 .border {
   border-style: solid;
   border-width: 5px;
+  text-align: center;
 }
 </style>
