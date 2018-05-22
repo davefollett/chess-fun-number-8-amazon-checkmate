@@ -39,12 +39,6 @@ const state = {
     getSquareValue: (state) => (row, column) => {
       return state.chessboard[row][column];
     },
-    getWhiteKing: (state) => {
-      return state.whiteKing;
-    },
-    getWhiteAmazon: (state) => {
-      return state.whiteAmazon;
-    },
     getNumberCheckmate: (state) => {
       return state.numberCheckmate;
     },
@@ -79,17 +73,39 @@ const state = {
 
       newBoard = markCheckLocations(newBoard, state.whiteAmazon);
       newBoard = blankKingAdjacent(newBoard, state.whiteKing);
+      newBoard = canMoveSafely(newBoard, state.whiteKing, state.whiteAmazon);
 
       state.numberCheckmate = computeTotal(newBoard, CHECKMATE);
       state.numberCheck = computeTotal(newBoard, CHECK);
       state.numberStalemate = computeTotal(newBoard, STALEMATE);
       state.numberSafe = computeTotal(newBoard, SAFE);
-      console.log(state.numberCheck);
 
       state.chessboard = newBoard;
     }
   }
   
+  function canMoveSafely(board, king, amazon) {
+
+    /*
+    for(let row = 0; row < board.length; row++) {
+      for(let column = 0; column < board[row].length; column++) {
+        //can this position make a safe move
+        //console.log({row,column});
+        if(board[row][column] === SAFE || board[row][column] === CHECK) {
+          
+          if(!isAdjacent(row, column, SAFE) {
+            
+          }
+      }
+    }
+*/
+    return board;
+  }
+
+  function isAdjacentAmazonWithAdjacentKing(board, king, amazon) {
+
+  }
+
   function computeTotal(newBoard, value) {
     return newBoard.reduce(function(accumulator, current) {
       return accumulator.concat(current);
@@ -98,18 +114,35 @@ const state = {
     }, 0);
   }
 
+  function getAdjacentLocations(row, column) {
+    return [
+      {row: row, column: column-1},
+      {row: row-1, column: column-1},
+      {row: row-1, column: column},
+      {row: row-1, column: column+1},
+      {row: row, column: column+1},
+      {row: row+1, column: column+1},
+      {row: row+1, column: column},
+      {row: row+1, column: column-1}
+    ];
+  }
+
+  function isAdjacent(row, column, type) {
+    let result = false;
+    let adjacent = getAdjacentLocations(row, column);
+
+    adjacent.forEach(function(location) {
+      let row = location.row;
+      let column = location.column;
+      if(onTheBoard(row, column) && board[row][column] === type) {
+        result = true;
+      }
+    });
+    return result;
+  }
 
   function blankKingAdjacent(board, king){
-    let adjacent = [
-      {row: king.row, column: king.column-1},
-      {row: king.row-1, column: king.column-1},
-      {row: king.row-1, column: king.column},
-      {row: king.row-1, column: king.column+1},
-      {row: king.row, column: king.column+1},
-      {row: king.row+1, column: king.column+1},
-      {row: king.row+1, column: king.column},
-      {row: king.row+1, column: king.column-1}
-    ];
+    let adjacent = getAdjacentLocations(king.row, king.column);
 
     adjacent.forEach(function(location) {
       let row = location.row;
@@ -117,7 +150,7 @@ const state = {
       if(onTheBoard(row, column) && board[row][column] !== WHITEAMAZON) {
         board[row][column] = BLANK;
       }
-    })
+    });
 
     return board;
   }
