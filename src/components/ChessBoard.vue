@@ -162,7 +162,8 @@ export default {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    /*grid-template-columns: repeat(10, 1fr);*/
+    grid-template-columns: repeat(10, 75px);
     grid-gap: 2px;
     align-items: center;
 }
