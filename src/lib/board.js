@@ -1,102 +1,184 @@
-export class Location {
-  constructor(row, column) {
-    this._row = row;
-    this._column = column;
-  }
+var toColumn = {
+  "a": 0,
+  "b": 1,
+  "c": 2,
+  "d": 3,
+  "e": 4,
+  "f": 5,
+  "g": 6,
+  "h": 7,
+};
 
-  get row() {
-    return this._row;
-  }
-
-  get column() {
-    return this._column;
-  }
-
-  move(rowIncrement, columnIncrement) {
-    this._row += rowIncrement;
-    this._column += columnIncrement;
-  }
+var toRow = {
+  "1": 7,
+  "2": 6,
+  "3": 5,
+  "4": 4,
+  "5": 3,
+  "6": 2,
+  "7": 1,
+  "8": 0,
 }
 
-export class Board {
-  constructor(kingLocation, amazonLocation, defaultValue) {
+export default class Board {
+
+  constructor() {
+    this.numberCheckmate = 0;
+    this.numberCheck = 0;
+    this.numberStalemate = 0;
+    this.numberSafe = 0;
+
     this.board = new Array(8);
-    this._kingLocation = kingLocation;
-    this._amazonLocation = amazonLocation;
-
     for(let i = 0; i < this.board.length; i++) {
-      this.board[i] = new Array(defaultValue, defaultValue, defaultValue, defaultValue, defaultValue, defaultValue, defaultValue, defaultValue);
+      this.board[i] = new Array(Board.BLANK, Board.BLANK, Board.BLANK, Board.BLANK, Board.BLANK, Board.BLANK, Board.BLANK, Board.BLANK);
     }
-
-    this.setLocation(this._kingLocation, Board.KING);
-    this.setLocation(this._amazonLocation, Board.AMAZON);
-    this.markCheckAsRook();
-    this.markCheckAsBishop();
-    this.markCheckAsKnight();
-    //this.canMoveSafely();
   }
 
   static get AMAZON() {
-    return 'A';
+    return "A";
   }
   static get BLANK() {
-    return 'B';
+    return "B";
   }
   static get CHECK() {
-    return '+';
+    return "+";
   }
   static get KING() {
-    return 'K';
+    return "K";
   }
   static get SAFE() {
-    return 'O';
+    return "O";
+  }
+  static get CHECKMATE() {
+    return "X";
+  }
+  static get STALEMATE() {
+    return "S";
   }
 
-  atLocation(location) {
-    return this.at(location.row, location.column);
+  execute(king, amazon) {
+    let row, column;
+
+    [column, row] = [...king];
+    this._kingRow = toRow[row];
+    this._kingColumn = toColumn[column];
+
+    [column, row] = [...amazon];
+    this._amazonRow = toRow[row];
+    this._amazonColumn = toColumn[column];
+
+    this.setBoard(Board.SAFE);
+    this.setLocation(this._kingRow, this._kingColumn, Board.KING);
+    this.setLocation(this._amazonRow, this._amazonColumn, Board.AMAZON);
+    this.markCheckAsRook();
+    this.markCheckAsBishop();
+    this.markCheckAsKnight();
+    this.blankKingAdjacent();
+    this.updateBoardForBlackKingMovement();
+    this.numberCheckmate = this.computeTotal(Board.CHECKMATE);
+    this.numberCheck = this.computeTotal(Board.CHECK);
+    this.numberStalemate = this.computeTotal(Board.STALEMATE);
+    this.numberSafe = this.computeTotal(Board.SAFE);
   }
+
   at(row, column) {
     return this.board[row][column];
   }
 
-  setLocation(location, value) {
-    this.board[location.row][location.column] = value;
+  setBoard(value) {
+    for(let row = 0; row < this.board.length; row++) {
+      for(let column = 0; column < this.board[row].length; column++) {
+        this.setLocation(row, column, value);
+      }
+    }
   }
 
-  onTheBoard(location) {
+  computeTotal(value) {
+    return this.board.reduce(function(accumulator, current) {
+      return accumulator.concat(current);
+    }).reduce(function(accumulator, current) {
+      return current === value ? accumulator+1 : accumulator;
+    }, 0);
+  }
+
+  setLocation(row, column, value) {
+    this.board[row][column] = value;
+  }
+
+  onTheBoard(row, column) {
     let result = false;
 
-    if((location.row >= 0 && location.row <=7) && 
-       (location.column >= 0 && location.column <= 7)) {
+    if((row >= 0 && row <=7) && (column >= 0 && column <= 7)) {
       result = true;
     }
     
     return result;
   }
 
+  getAdjacentLocations(row, column) {
+    return [
+      {row: row, column: column-1},
+      {row: row-1, column: column-1},
+      {row: row-1, column: column},
+      {row: row-1, column: column+1},
+      {row: row, column: column+1},
+      {row: row+1, column: column+1},
+      {row: row+1, column: column},
+      {row: row+1, column: column-1}
+    ];
+  }
+
+  isAdjacent(row, column, type) {
+    let result = false;
+    let adjacent = this.getAdjacentLocations(row, column);
+    adjacent.forEach(function(location) {
+      let row = location.row;
+      let column = location.column;
+      if(this.onTheBoard(row, column) && this.at(row, column) === type) {
+        result = true;
+      }
+    }, this);
+
+    return result;
+  }
+
+  blankKingAdjacent(){
+    let adjacent = this.getAdjacentLocations(this._kingRow, this._kingColumn);
+
+    adjacent.forEach(function(location) {
+      let row = location.row;
+      let column = location.column;
+      if(this.onTheBoard(row, column) && this.at(row, column) !== Board.AMAZON) {
+        this.setLocation(row, column, Board.BLANK);
+      }
+    }, this);
+  }
+
   markCheckTillOccupied(rowIncrement, columnIncrement ) {
-    let location = new Location(this._amazonLocation.row,
-                                this._amazonLocation.column);
+
+    let row = this._amazonRow + rowIncrement;
+    let column = this._amazonColumn + columnIncrement;
     let foundKing = false;
 
-    location.move(rowIncrement, columnIncrement);
-    while(this.onTheBoard(location) && !foundKing) {
+    while(this.onTheBoard(row, column) && !foundKing) {
       
-      if(this.atLocation(location) === Board.SAFE) {
-        this.setLocation(location, Board.CHECK);
-      } else if(this.atLocation(location) === Board.KING) {
+      if(this.at(row, column) === Board.SAFE) {
+        this.setLocation(row, column, Board.CHECK);
+      } else if(this.at(row, column) === Board.KING) {
         foundKing = true;
       }
-      location.move(rowIncrement, columnIncrement)
+
+      row += rowIncrement;
+      column += columnIncrement
     }
   }
 
   markAmazonOffsetInCheck(rowOffset, columnOffset) {
-    let location = new Location(this._amazonLocation.row + rowOffset,
-                                this._amazonLocation.column + columnOffset);
+    let row = this._amazonRow + rowOffset;
+    let column = this._amazonColumn + columnOffset;
 
-    if(this.onTheBoard(location) && this.atLocation(location) === Board.SAFE) {
-      this.setLocation(location, Board.CHECK);
+    if(this.onTheBoard(row, column) && this.at(row, column) === Board.SAFE) {
+      this.setLocation(row, column, Board.CHECK);
     }
   }
   
@@ -127,26 +209,25 @@ export class Board {
     this.markAmazonOffsetInCheck(+1, -2);
     
   }
-
-  /*
-  canMoveSafely() {
+  
+  updateBoardForBlackKingMovement() {
 
     for(let row = 0; row < this.board.length; row++) {
       for(let column = 0; column < this.board[row].length; column++) {
 
         if(this.at(row, column) === Board.SAFE) {
           
-          if(!isAdjacent(board, row, column, SAFE)) {
-            board[row][column] = STALEMATE;
+          if(!this.isAdjacent(row, column, Board.SAFE)) {
+            this.setLocation(row, column, Board.STALEMATE);
           }
-        } else if(board[row][column] === Board.CHECK) {
+        } else if(this.at(row, column) === Board.CHECK) {
 
-          if(!isAdjacent(board, row, column, SAFE) && !isAdjacent(board, row, column, STALEMATE)) {
+          if(!this.isAdjacent(row, column, Board.SAFE) && !this.isAdjacent(row, column, Board.STALEMATE)) {
 
-            if(isAdjacent(board, row, column, WHITEAMAZON) && !isAdjacent(board, amazon.row, amazon.column, WHITEKING)) {
-              board[row][column] = CHECK;
+            if(this.isAdjacent(row, column, Board.AMAZON) && !this.isAdjacent(this._amazonRow, this._amazonColumn, Board.KING)) {
+              this.setLocation(row, column, Board.CHECK);
             } else {
-              board[row][column] = CHECKMATE;
+              this.setLocation(row, column, Board.CHECKMATE);
             }
           }
         }
@@ -154,6 +235,5 @@ export class Board {
       
     }
   }
-*/
 
 }

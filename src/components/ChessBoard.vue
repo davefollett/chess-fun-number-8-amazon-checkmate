@@ -84,74 +84,10 @@ export default {
     getColumn(cellNumber) {
       return (cellNumber % 10) -2;
     },
-    convertLetterToRow(letter) {
-      let result = 0;
-      switch(letter) {
-        case "1":
-          result = 7;
-          break;
-        case "2":
-          result = 6;
-          break;
-        case "3":
-          result = 5;
-          break;
-        case "4":
-          result = 4;
-          break;
-        case "5":
-          result = 3;
-          break;
-        case "6":
-          result = 2;
-          break;
-        case "7":
-          result = 1;
-          break;
-        case "8":
-          result = 0;
-          break;
-      }
-      return result;
-    },
-    convertLetterToColumn(letter) {
-      let result = 0;
-      switch(letter) {
-        case "a":
-          result = 0;
-          break;
-        case "b":
-          result = 1;
-          break;
-        case "c":
-          result = 2;
-          break;
-        case "d":
-          result = 3;
-          break;
-        case "e":
-          result = 4;
-          break;
-        case "f":
-          result = 5;
-          break;
-        case "g":
-          result = 6;
-          break;
-        case "h":
-          result = 7;
-          break;
-      }
-      return result;
-    },
-    convertToRowColumn(chessLocation) {
-      let spread = [...chessLocation];
-      return {row: this.convertLetterToRow(spread[1]), column: this.convertLetterToColumn(spread[0])};
-    },
     updateBoard() {
       this.$store.dispatch('updateBoard', {
-        whiteKing: this.convertToRowColumn(this.whiteKing),
-        whiteAmazon:  this.convertToRowColumn(this.whiteAmazon)
+        whiteKing: this.whiteKing,
+        whiteAmazon: this.whiteAmazon
       });
     }
   },
