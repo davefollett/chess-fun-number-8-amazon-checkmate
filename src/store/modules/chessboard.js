@@ -1,13 +1,15 @@
-const DEFAULT_SQUARE = "O";
+import {Location, Board} from '@/lib/board';
+
+//const DEFAULT_SQUARE = "O";
 const INIT_SQUARE = "-"
 
-const WHITEKING = "K";
-const WHITEAMAZON = "A";
-const CHECK = "+";
-const SAFE = DEFAULT_SQUARE;
-const BLANK = "B";
-const CHECKMATE = "X";
-const STALEMATE = "S";
+//const WHITEKING = "K";
+//const WHITEAMAZON = "A";
+//const CHECK = "+";
+//const SAFE = DEFAULT_SQUARE;
+//const BLANK = "B";
+//const CHECKMATE = "X";
+//const STALEMATE = "S";
 
 function initializeBoard(initialState) {
   let board = new Array(8);
@@ -60,6 +62,22 @@ function initializeBoard(initialState) {
   
   const mutations = {
     UPDATE_BOARD: (state, payload) => {
+      let kingLocation = new Location(payload.whiteKing.row, payload.whiteKing.column);
+      let amazonLocation = new Location(payload.whiteAmazon.row, payload.whiteAmazon.column);
+      let newBoard = new Board(kingLocation, amazonLocation, Board.SAFE);
+      
+      //newBoard.markCheckAsRook();
+      //newBoard.markCheckAsBishop();
+
+      state.chessboard = newBoard.board;
+
+      //newBoard.setKingLocation(payload.whiteKing);
+      //newBoard.setAmazonLocation(payload.whiteAmazon);
+      //console.log(dave.kingLocation);
+
+      /*
+
+
       let newBoard = initializeBoard(DEFAULT_SQUARE);
 
       state.whiteKing = payload.whiteKing;
@@ -78,8 +96,11 @@ function initializeBoard(initialState) {
       state.numberSafe = computeTotal(newBoard, SAFE);
 
       state.chessboard = newBoard;
+      */
     }
   }
+
+  /*
   
   function canMoveSafely(board, king, amazon) {
 
@@ -231,7 +252,7 @@ function initializeBoard(initialState) {
     
     return board;
   }
-
+*/
   export default {
     state,
     getters,
